@@ -1,6 +1,7 @@
 import React, { Component } from "react";                    //React 라이브러리와 Component 클래스를 react 패키지에서 가져옵니다. 이 Component 클래스는 React에서 클래스로 컴포넌트를 작성할 때 사용됩니다.
 import TableRow from '@mui/material/TableRow';               //Material-UI(MUI)에서 제공하는 TableRow 컴포넌트를 가져옵니다. 이 컴포넌트는 테이블에서 한 줄(row)을 나타내는 요소입니다.
 import TableCell from '@mui/material/TableCell';             //Material-UI에서 제공하는 TableCell 컴포넌트를 가져옵니다. 이 컴포넌트는 테이블에서 한 셀(cell)을 나타내는 요소입니다.
+import CustomerDelete from './CustomerDelete';
 
 class Customer extends Component {                           //Customer라는 새로운 클래스를 정의하는 코드입니다. 이 클래스는 Component를 확장(상속)하여 React 컴포넌트로 동작합니다.
     render() {                                               //render() 메서드는 React 컴포넌트에서 UI를 정의하는 필수 메서드입니다. 이 메서드 안에서 JSX 코드(HTML 구조)를 반환합니다.
@@ -12,6 +13,7 @@ class Customer extends Component {                           //Customer라는 �
                 <TableCell>{this.props.birthday}</TableCell> {/*birthday prop을 사용하여 고객의 생일을 표시하는 테이블 셀을 생성합니다. */}
                 <TableCell>{this.props.gender}</TableCell>   {/* gender prop을 사용하여 고객의 성별을 표시하는 테이블 셀을 생성합니다.*/}
                 <TableCell>{this.props.job}</TableCell>      {/*job prop을 사용하여 고객의 직업을 표시하는 테이블 셀을 생성합니다. */}
+                 <TableCell> <CustomerDelete  stateRefresh={this.props.stateRefresh} id = {this.props.id}/> </TableCell> 
             </TableRow>
         )
     }

@@ -15,6 +15,17 @@ function App() {
   const [customers, setCustomers] = useState([]);    // customers 상태 변수는 고객 데이터를 저장하는 역할을 합니다. 초기값은 빈 배열로 설정됩니다. setCustomers는 customers 상태를 업데이트하는 함수입니다.
   const [loading, setLoading] = useState(true);      // loading 상태 변수는 데이터가 로드 중인지를 추적합니다. 초기값은 true로 설정되어 로딩 중 상태로 시작됩니다. setLoading은 loading 상태를 업데이트하는 함수입니다.
 
+  const stateRefresh = () => {
+    callApi().then(res => {
+      setCustomers(res); // API에서 받은 데이터로 고객 상태 업데이트
+      setLoading(false); // 데이터 로드 후 로딩 상태 변경
+    }).catch(err => {
+      console.log(err);
+      setLoading(false); // 에러 발생 시에도 로딩 상태 변경
+    });
+  };
+  
+
   const callApi = async () => {                      //callApi는 비동기 함수로, /api/customers에서 고객 데이터를 가져오는 API 호출을 수행합니다
     const response = await fetch('/api/customers');  //await fetch('/api/customers'): 고객 데이터를 가져오는 HTTP 요청을 보냅니다.
     const body = await response.json();              //await response.json(): 응답을 JSON 형태로 변환하여 반환합니다.
@@ -25,12 +36,13 @@ function App() {
     callApi()        //callApi를 호출하여 고객 데이터를 가져옵니다.
       .then(res => { //API 호출이 성공하면, 받은 데이터(res)로 customers 상태를 업데이트하고, loading 상태를 false로 설정합니다.
         setCustomers(res);  // API에서 받은 데이터로 고객 상태 업데이트
-        setLoading(false);  // 데이터 로드 후 로딩 상태 변경
+        //setLoading(false);  // 데이터 로드 후 로딩 상태 변경
       })
       .catch(err => {
         console.log(err);
-        setLoading(false);  // 에러 발생 시에도 로딩 상태 변경
+        //setLoading(false);  // 에러 발생 시에도 로딩 상태 변경
       });
+      setLoading(false);
   }, []);  // 빈 배열을 넣어주면 컴포넌트 마운트 시 한 번만 실행됨
 
   return (
@@ -51,28 +63,22 @@ function App() {
                   <TableCell>생년월일</TableCell>
                   <TableCell>성별</TableCell>
                   <TableCell>직업</TableCell>
+                  <TableCell>설정</TableCell>
                 </TableRow>
               </TableHead>
 
               <TableBody>
                 {customers.map(c => {
                   return (
-                    <Customer
-                      key={c.id}
-                      id={c.id}
-                      image={c.image}
-                      name={c.name}
-                      birthday={c.birthday}
-                      gender={c.gender}
-                      job={c.job}
-                    />
+                    // <Customer stateRefresh = {stateRefresh} key={c.id} id={c.id} image={c.image} name={c.name} birthday={c.birthday}  gender={c.gender} job={c.job} />
+                    <Customer stateRefresh = {stateRefresh}  key={c.id} id={c.id} image={c.image} name={c.name} birthday={c.birthday}  gender={c.gender} job={c.job} createDate ={c.createDate} isDeleted ={c.isDeleted}/>
                   );
                 })}
               </TableBody>
             </Table>
           )}
         </div>
-        <CustomerAdd />
+        <CustomerAdd stateRefresh = {stateRefresh} />
       </Paper>
     </div>
   );

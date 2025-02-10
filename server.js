@@ -49,7 +49,6 @@ fs.readFile('./database.json', (err, data) => {  //fs.readFile(): database.json 
   });
 
 
-
   // MySQL 연결 확인
   connection.connect((err) => {  //connection.connect(): MySQL 서버와 연결을 시도합니다.
     if (err) {
@@ -74,7 +73,7 @@ fs.readFile('./database.json', (err, data) => {  //fs.readFile(): database.json 
   const upload = multer({ storage: storage });
 
   app.get('/api/customers', (req, res) => { //api/customers 경로로 GET 요청이 오면, MySQL 데이터베이스에서 고객 목록을 조회하고 JSON 형식으로 응답합니다.
-    connection.query("SELECT * FROM customer", (err, rows) => {
+    connection.query("SELECT * FROM customer WHERE isDeleted = '0'", (err, rows) => {
       if (err) {
         console.error('Database query error: ', err);
         return res.status(500).send('Database query error');
@@ -98,13 +97,17 @@ fs.readFile('./database.json', (err, data) => {  //fs.readFile(): database.json 
     }
     console.log("11111");
 
-    const sql = 'INSERT INTO customer VALUES (null,?,?,?,?,?)';
+    const sql = 'INSERT INTO customer VALUES (null,?,?,?,?,?,now(),"0")';
+
     const image = '/image/' + req.file.filename;
     name = req.body.name;
     birthday = req.body.birthday;
     gender = req.body.gender;
     job = req.body.job;
-    const params = [image, name, birthday, gender, job];
+    createDate = req.body.createDate;
+    isDeleted = req.body.isDeleted;
+
+    const params = [image, name, birthday, gender, job,createDate,isDeleted];
 
     console.log(name);
     console.log(birthday);
@@ -122,6 +125,15 @@ fs.readFile('./database.json', (err, data) => {  //fs.readFile(): database.json 
     });
   });
 
+  app.delete('/api/customers/:id', (req ,res) =>{
+    let sql = 'UPDATE customer SET isDeleted = "1" where id =?';
+    let params =[req.params.id];
+    connection.query(sql,params,
+      (err, rows, fields) =>{
+        res.send(rows);
+      }
+    )
+  })
   app.listen(port, () => console.log(`Listening on port ${port}`));  //지정된 포트에서 Express 서버를 실행합니다. 클라이언트의 요청을 기다립니다
 
 });

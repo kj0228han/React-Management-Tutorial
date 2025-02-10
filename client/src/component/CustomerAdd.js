@@ -23,10 +23,13 @@ class CustomerAdd extends React.Component { //CustomerAdd는 React 클래스 컴
     handleFormSubmit = async (e) => {  //handleFormSubmit는 폼이 제출될 때 실행되는 함수입니다.
         e.preventDefault();            //e.preventDefault()는 폼이 실제로 제출되는 것을 방지하고, 사용자 정의 동작을 수행하게 합니다.
 
+
+
         //this.addCustomer()
         const response = await this.addCustomer()  // axios 요청을 기다림, this.addCustomer()는 고객을 추가하는 함수입니다. await를 사용하여 비동기 요청이 완료될 때까지 기다립니다.
             .then((response) => {                  //성공하면 response.data를 콘솔에 출력하고, 성공 알림을 띄웁니다.
                 console.log(response.data);
+                this.props.stateRefresh();
 
             })
             .catch((error) => {                   //실패하면 오류를 콘솔에 출력하고, 오류 메시지를 알림창으로 띄웁니다.
@@ -43,7 +46,8 @@ class CustomerAdd extends React.Component { //CustomerAdd는 React 클래스 컴
             fileName: ''
         })
 
-        window.location.reload();   //상태를 초기화한 후 페이지를 새로 고칩니다. 폼이 비워지고, 새로 시작되는 상태로 돌아갑니다.
+        //window.location.reload(); //상태를 초기화한 후 (전체)페이지를 새로 고칩니다. 폼이 비워지고, 새로 시작되는 상태로 돌아갑니다.
+        //this.props.stateRefresh();  //이부분에 두면, 순서적으로 업데이트후에 수행됨을 보장못함, 따라서 옮김!  필요한 부분만 새로고침(즉,고객추가 컴포넌트에서 부모컴포넌트의 상태를 변경경)
     }
 
     handleFileChange = (e) => {       //handleFileChange는 사용자가 파일을 선택할 때 실행됩니다. 
@@ -59,7 +63,10 @@ class CustomerAdd extends React.Component { //CustomerAdd는 React 클래스 컴
         this.setState(nextState);
     }
 
+   
+    
     addCustomer = () => {     //addCustomer는 서버로 데이터를 전송하는 함수입니다., API의 URL을 지정하고, formData에 필요한 데이터를 첨부합니다.
+        const now = new Date();
         alert('addCustomer! 444-1');
         const url = 'http://localhost:5000/api/customers'; // API의 절대 경로로 변경
         const formData = new FormData();               //FormData를 사용하여 폼 데이터를 생성하고, 파일과 사용자 정보를 추가합니다.
@@ -68,6 +75,14 @@ class CustomerAdd extends React.Component { //CustomerAdd는 React 클래스 컴
         formData.append('birthday', this.state.birthday);  // 생년월일
         formData.append('gender', this.state.gender);  // 성별
         formData.append('job', this.state.job);        // 직업
+
+        //formData.append('createDate', this.sta7te.createDate);                 // 생성일자
+        formData.append('createDate', new Date().toISOString().split('T')[0]);   // 생성일자
+        formData.append('isDeleted', '0');        // 삭제여부
+
+        //formData.append('createDate', NOW());          
+        //formData.append('createDate', now.toISOString()); // 생성일자
+        
         alert('addCustomer! 444-2');
 
         const config = {                    //config는 HTTP 요청에 필요한 헤더를 설정합니다.
@@ -88,6 +103,8 @@ class CustomerAdd extends React.Component { //CustomerAdd는 React 클래스 컴
                 생년월일: <input type="text" name="birthday" value={this.state.birthday} onChange={this.handleValueChange} /> <br />
                 성별: <input type="text" name="gender" value={this.state.gender} onChange={this.handleValueChange} /> <br />
                 직업: <input type="text" name="job" value={this.state.job} onChange={this.handleValueChange} /> <br />
+                생성일자: <input type="text" name="createDate" value={this.state.createDate} onChange={this.handleValueChange} /> <br />
+                삭제여부: <input type="text" name="isDeleted" value={this.state.isDeleted} onChange={this.handleValueChange} /> <br />
                 <button type="submit">추가하기</button>
             </form>
         );
